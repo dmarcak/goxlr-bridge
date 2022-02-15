@@ -11,6 +11,9 @@ build/
 *.iws
 .idea/
 
+# VSCode
+.vscode/
+
 # Mac
 .DS_Store
 

@@ -24,7 +24,7 @@ class GoXLRMessage {
 class GoXLRConnectionEvent extends GoXLRMessage {
   String device;
 
-  GoXLRConnectionEvent(this.device, String event) : super('', '', event) {}
+  GoXLRConnectionEvent(this.device, String event) : super('', '', event);
 }
 
 class ProfileList extends GoXLRMessage {
@@ -33,7 +33,7 @@ class ProfileList extends GoXLRMessage {
   ProfileList(String action, String event, Map<String, dynamic> payload)
       : profiles = List.from(
             payload['Profiles'].map((dynamic element) => element as String)),
-        super(action, '', event) {}
+        super(action, '', event);
 }
 
 class GetSettings extends GoXLRMessage {

@@ -1,14 +1,15 @@
 import 'package:test/test.dart';
 import 'dart:convert';
-import '../../../bin/goxlr/model/response/goxlr_message.dart';
+
+import '../../../bin/src/goxlr/message/goxlr_message.dart';
 
 void main() {
   test('Create profile list from json', () {
     String json =
-        '{"action":"com.tchelicon.goxlr.profilechange","context":"","event":"sendToPropertyInspector","payload":{"Profiles":["My Profile","Sleep"]}}';
+        '{"action":"com.tchelicon.goxlr.profilechange", "context": "", "event":"sendToPropertyInspector","payload":{"Profiles":["My Profile","Sleep"]}}';
 
-    ProfileList message =
-        GoXLRMessage.fromJson(jsonDecode(json)) as ProfileList;
+    var message = GoXLRMessageFactory.createFromPayload(jsonDecode(json))
+        as SendToPropertyInspectorMessage;
 
     expect(message.action, 'com.tchelicon.goxlr.profilechange');
     expect(message.context, '');
