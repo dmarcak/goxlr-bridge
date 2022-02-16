@@ -1,0 +1,174 @@
+openapi: 3.0.3
+info:
+  title: GoXLR Bridge
+  description: GoXLR Bridge endpoints list
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:6805
+    description: Local GoXLR Bridge
+components:
+  schemas:
+    ResponseStatus:
+      type: string
+      enum:
+        - "ok"
+        - "error"
+    SuccessResponse:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ResponseStatus'
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ResponseStatus'
+        message:
+          type: string
+          description: 'Error details'
+    ProfileList:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ResponseStatus'
+        profiles:
+          type: array
+          items:
+            type: string
+    Input:
+      type: string
+      enum:
+        - Mic
+        - Chat
+        - Music
+        - Game
+        - Console
+        - LineIn
+        - System
+        - Samples 
+    Output:
+      type: string
+      enum:
+        - Headphones
+        - BroadcastMix
+        - LineOut
+        - ChatMic
+        - Sampler
+    Action:
+      type: string
+      enum:
+        - TurnOn
+        - TurnOff
+        - Toggle
+    RoutingTableRequest:
+      type: object
+      properties:
+        input:
+          $ref: '#/components/schemas/Input'
+        output:
+          $ref: '#/components/schemas/Output'
+        action:
+          $ref: '#/components/schemas/Action'
+    ProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+  responses:
+    SuccessResponse:
+      description: 'Operation success.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'
+    ErrorResponse:
+      description: 'Operation failed.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ProfileList:
+      description: 'List of available profiles.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProfileList'
+    GoXLRUnavaiable:
+      description: 'GoXLR is not connected to GoXLR Bridge, check connection.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: 'Internal server error, check GoXLR Bridge logs.'
+      content:
+        "*/*":
+          schema:
+            type: string
+paths:
+  /api/routing-table:
+    post:
+      tags:
+        - Routing table
+      description: 'Update routing table'
+      operationId: 'setRoutingTable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoutingTableRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+        '410':
+          $ref: '#/components/responses/GoXLRUnavaiable'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/profile:
+    get:
+      tags:
+        - Profile
+      description: 'Get list of avaiable profiles'
+      operationId: 'getProfiles'
+      responses:
+        '200':
+          $ref: '#/components/responses/ProfileList'
+        '410':
+          $ref: '#/components/responses/GoXLRUnavaiable'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Profile
+      description: 'Set profile'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '410':
+          $ref: '#/components/responses/GoXLRUnavaiable'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/profile/fetch:
+    post:
+      tags:
+        - Profile
+      description: 'Refresh list of profiles in GoXLR Bridge'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+        '410':
+          $ref: '#/components/responses/GoXLRUnavaiable'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
