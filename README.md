@@ -52,7 +52,7 @@ Then, click `Connect/Reconnect to Stream Deck App`.
 In case of any issues try restarting GoXLR App.
 
 ### API
-[Documentation](doc/api.yaml) in OpenApi format is available in `doc` folder.
+[Documentation](doc/openapi.yaml) in OpenApi format is available in `doc` folder.
 
 ### Examples
 #### Toggle `Line Out` output for `Music` input with python script
