@@ -18,6 +18,8 @@ Future<Response> setRoutingTable(GoXLRManager manager, Request req) async {
     return JsonResponse.ok(SuccessPayload());
   } on GoXLRUnavailable catch (exception) {
     return JsonResponse.gone(ErrorPayload(exception));
+  } on ProfileNotFound catch (exception) {
+    return JsonResponse.notFound(ErrorPayload(exception));
   } catch (exception) {
     return JsonResponse.internalServerError(ErrorPayload(exception));
   }
