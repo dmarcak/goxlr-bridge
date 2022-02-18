@@ -1,3 +1,8 @@
+import 'dart:math';
+
+import 'package:logging/logging.dart';
+
+import 'exception.dart';
 import 'model/profile.dart';
 import 'request/fetch_profiles.dart';
 import 'request/set_profile.dart';
@@ -16,11 +21,12 @@ enum OutputType { Headphones, BroadcastMix, LineOut, ChatMic, Sampler }
 enum ActionType { TurnOn, TurnOff, Toggle }
 
 class GoXLR {
-  GoXLRConnection connection;
+  Logger _logger;
+  GoXLRConnection _connection;
 
   List<String> profiles = List.empty(growable: true);
 
-  GoXLR(this.connection);
+  GoXLR(this._connection, this._logger);
 
   void update(Map<String, dynamic> payload) {
     try {
@@ -33,25 +39,30 @@ class GoXLR {
       if (message is SendToPropertyInspectorMessage) {
         profiles = message.profiles;
       }
+    } on UnsupportedEvent catch (exception) {
+      _logger.warning('Unsupported event received from GoXLR.', exception);
+    } on InvalidMessage catch (exception) {
+      _logger.severe('Invalid message from GoXLR.', exception);
     } catch (exception) {
-      print(exception.toString());
+      _logger.shout(
+          'An error ocurred while processing GoXLR Message.', exception);
     }
   }
 
   void fetchProfiles() {
-    connection.dispatch(FetchProfiles());
+    _connection.dispatch(FetchProfiles());
   }
 
   void setProfile(Profile profile) {
     if (!profiles.contains(profile.name)) {
-      throw Exception('There is no profile named ${profile.name}');
+      throw ProfileNotFound(profile.name);
     }
 
-    connection.dispatch(SetProfile(profile.name));
+    _connection.dispatch(SetProfile(profile.name));
   }
 
   void setRoutingTable(RoutingTable table) {
-    connection
+    _connection
         .dispatch(SetRoutingTable(table.input, table.output, table.action));
   }
 }

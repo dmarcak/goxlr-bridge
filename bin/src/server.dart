@@ -12,13 +12,13 @@ import 'goxlr/goxlr.dart';
 import 'manager.dart';
 
 class Server {
-  final Logger logger;
-  final GoXLRManager goXLRManager;
+  final Logger _logger;
+  final GoXLRManager _goXLRManager;
   final String _host;
   final int _port;
   final Router _router;
 
-  Server(this.logger, this.goXLRManager,
+  Server(this._logger, this._goXLRManager,
       {String host = '0.0.0.0', int port = 6805})
       : _host = host,
         _port = port,
@@ -37,16 +37,16 @@ class Server {
   }
 
   void _onWebSocketData(dynamic data) {
-    logger.fine('Received websocket payload: $data');
-    goXLRManager.goXLR.update(jsonDecode(data.toString()));
+    _logger.fine('Received websocket payload: $data');
+    _goXLRManager.goXLR.update(jsonDecode(data.toString()));
   }
 
   FutureOr<Response> _webSocketHandler(Request request) =>
       webSocketHandler((WebSocketChannel webSocket) {
-        logger.fine('WebSocket client connected.');
+        _logger.fine('WebSocket client connected.');
 
-        goXLRManager.set(GoXLR(GoXLRConnection(webSocket)));
-        webSocket.stream.listen(_onWebSocketData, onDone: goXLRManager.remove);
+        _goXLRManager.set(GoXLR(GoXLRConnection(webSocket), _logger));
+        webSocket.stream.listen(_onWebSocketData, onDone: _goXLRManager.remove);
       })(request);
 
   FutureOr<Response> _requestHandler(Request request) async {
@@ -63,14 +63,14 @@ class Server {
   Middleware _requestLogger() => (innerHandler) {
         return (request) {
           return Future.sync(() => innerHandler(request)).then((response) {
-            logger.fine(
+            _logger.fine(
                 '${request.method.padRight(7)} [${response.statusCode}] ${request.requestedUri.path}');
 
             return response;
           }, onError: (Object error, StackTrace stackTrace) {
             if (error is HijackException) throw error;
 
-            logger.warning(
+            _logger.warning(
                 '${request.method.padRight(7)} ${request.requestedUri.path}\n$error');
 
             throw error;
