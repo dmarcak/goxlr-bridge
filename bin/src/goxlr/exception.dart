@@ -11,3 +11,21 @@ class ProfileNotFound implements Exception {
   @override
   String toString() => 'Profile $name not found.';
 }
+
+class InvalidMessage implements Exception {
+  final String message;
+
+  InvalidMessage(this.message);
+
+  @override
+  String toString() => message;
+}
+
+class UnsupportedEvent implements Exception {
+  final String name;
+
+  UnsupportedEvent(this.name);
+
+  @override
+  String toString() => 'Event $name is not supported.';
+}

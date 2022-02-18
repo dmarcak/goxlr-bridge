@@ -1,24 +1,26 @@
+import '../exception.dart';
+
 abstract class GoXLRMessage {}
 
 class GoXLRMessageFactory {
+  static const Map<String, Function(Map<String, dynamic>)> factoryMap = {
+    'goxlrConnectionEvent': GoXLRConnectionEventMessage.create,
+    'sendToPropertyInspector': SendToPropertyInspectorMessage.create,
+    'getSettings': GetSettings.create,
+  };
+
   static GoXLRMessage createFromPayload(Map<String, dynamic> payload) {
-    assert(payload.containsKey('event'));
+    if (!payload.containsKey('event') || payload['event'] is! String) {
+      throw InvalidMessage(payload.toString());
+    }
 
     var event = payload['event'];
 
-    if (event == 'goxlrConnectionEvent') {
-      return GoXLRConnectionEventMessage.create(payload);
+    if (factoryMap.containsKey(event) && factoryMap[event] != null) {
+      return factoryMap[event]!(payload);
     }
 
-    if (event == 'sendToPropertyInspector') {
-      return SendToPropertyInspectorMessage.create(payload);
-    }
-
-    if (event == 'getSettings') {
-      return GetSettings.create(payload);
-    }
-
-    throw Exception('Unsupported event type: $event.');
+    throw UnsupportedEvent(event);
   }
 }
 
