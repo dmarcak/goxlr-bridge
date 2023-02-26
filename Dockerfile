@@ -16,4 +16,4 @@ COPY --from=build /app/bin/goxlr_bridge /app/bin/
 EXPOSE 6805
 
 ENTRYPOINT [ "/app/bin/goxlr_bridge" ]
-CMD [ "-h 0.0.0.0" ]
+CMD [ "-h", "0.0.0.0" ]

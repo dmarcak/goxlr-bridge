@@ -72,3 +72,6 @@ In case of any issues add `--debug` flag to start parameters.
 
 ## License
 GoXLR Bridge is licensed under the MIT License, see LICENSE for more information.
+
+## Disclaimer
+This project is not supported by or affiliated in any way with TC-Helicon. For the official GoXLR software, please refer to their website.
